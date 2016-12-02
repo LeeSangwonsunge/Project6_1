@@ -12,6 +12,7 @@ import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,6 +23,9 @@ public class MainActivity extends AppCompatActivity {
     TimePicker tim1;
     TextView tv1;
     int yea, mon, day, hou, min;
+    int step=0;
+    int calcheck=0;
+    int timecheck=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,29 +48,47 @@ public class MainActivity extends AppCompatActivity {
                 cro1.setBase(SystemClock.elapsedRealtime());
                 cro1.start();
                 cro1.setTextColor(Color.parseColor("#FF0000"));
+                step=1;
+                timecheck=0;
+                calcheck=0;
+            }
+        });
+        tim1.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+            @Override
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                hou = hourOfDay;
+                min = minute;
+                timecheck=1;
+            }
+        });
+        cal1.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
+                yea = year;
+                mon = month;
+                day = dayOfMonth;
+                calcheck=1;
             }
         });
         btn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cro1.stop();
-                cro1. setTextColor(Color.parseColor("#0000FF"));
-                cal1.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-                    @Override
-                    public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                        yea = year;
-                        mon = month;
-                        day = dayOfMonth;
+                if(step==1){
+                    if(calcheck!=1) {
+                        Toast.makeText(MainActivity.this, "날짜를 선택해주세요", Toast.LENGTH_SHORT).show();
                     }
-                });
-                tim1.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-                    @Override
-                    public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                        hou = hourOfDay;
-                        min = minute;
+                    else if(timecheck!=1) {
+                        Toast.makeText(MainActivity.this, "시간을 선택해주세요", Toast.LENGTH_SHORT).show();
                     }
-                });
-                tv1.setText(yea+"년"+mon+"월"+day+"일"+hou+"시"+min+"분 예약됨");
+                    else {
+                        cro1.stop();
+                        cro1.setTextColor(Color.parseColor("#0000FF"));
+                        tv1.setText(yea + "년" + mon + "월" + day + "일" + hou + "시" + min + "분 예약됨");
+                        step = 0;
+                    }
+                }else{
+                    Toast.makeText(MainActivity.this, "예약시작버튼을 누르세요", Toast.LENGTH_SHORT).show();
+                }
         }
         });
 
